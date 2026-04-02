@@ -76,16 +76,16 @@ Bash
 If the command above returns a long string called access_token, copy it and use it to "knock" on the API's door:
 ```Bash
 
-# Replace <TOKEN> with the long string received in step 3
-curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000
-```
-    Expected Result:
-    The API should reply: "Welcome Pippo! I received your Token...".
-    🔍 Troubleshooting for your colleague:
+    # Replace <TOKEN> with the long string received in step 3
+    curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000
+    ```
+        Expected Result:
+        The API should reply: "Welcome Pippo! I received your Token...".
+        🔍 Troubleshooting for your colleague:
 
-        -> Error unauthorized_client: Go to Keycloak -> Clients -> mia-api -> Settings. Ensure Direct access grants is ON.
-        -> Error invalid_grant: Usually means the "Required Actions" from Step 2 were not cleared.
-        -> Connection Refused: Ensure the Python API container is running (docker logs api_test).
+            -> Error unauthorized_client: Go to Keycloak -> Clients -> mia-api -> Settings. Ensure Direct access grants is ON.
+            -> Error invalid_grant: Usually means the "Required Actions" from Step 2 were not cleared.
+            -> Connection Refused: Ensure the Python API container is running (docker logs api_test).
 
 5. SLES 15 OS-Level Integration (System Authentication)
 While Keycloak handles modern web authentication (Tokens/OAuth2), the SLES 15 container demonstrates how a Linux server can natively "trust" our LDAP directory for system-level users.
