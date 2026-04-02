@@ -89,46 +89,44 @@ curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000
 
 5. SLES 15 OS-Level Integration (System Authentication)
 While Keycloak handles modern web authentication (Tokens/OAuth2), the SLES 15 container demonstrates how a Linux server can natively "trust" our LDAP directory for system-level users.
-A. Access the SLES Container
 
-Open a terminal and enter the SUSE machine:
-```Bash
-docker exec -it sles_test /bin/bash
-```
-B. Configure the LDAP Client (Automatic Setup)
-Run this command inside the SLES container to install the necessary tools and point the OS to our OpenLDAP server:
-```Bash
+    A. Access the SLES Container
+    Open a terminal and enter the SUSE machine:
+    ```Bash
+    docker exec -it sles_test /bin/bash
+    ```
+    B. Configure the LDAP Client (Automatic Setup)
+    Run this command inside the SLES container to install the necessary tools and point the OS to our OpenLDAP server:
+    ```Bash
 
-# 1. Install LDAP client and NSS/PAM modules
-zypper install -y openldap-cpp-client nss-pam-ldapd && \
+    # 1. Install LDAP client and NSS/PAM modules
+    zypper install -y openldap-cpp-client nss-pam-ldapd && \
 
-# 2. Configure the LDAP daemon connection
-echo -e "uid nslcd\ngid nslcd\nuri ldap://openldap:389\nbase dc=esempio,dc=it\nbinddn cn=admin,dc=esempio,dc=it\nbindpw admin" > /etc/nslcd.conf && \
+    # 2. Configure the LDAP daemon connection
+    echo -e "uid nslcd\ngid nslcd\nuri ldap://openldap:389\nbase dc=esempio,dc=it\nbinddn cn=admin,dc=esempio,dc=it\nbindpw admin" > /etc/nslcd.conf && \
 
-# 3. Tell the OS to look into LDAP for users and groups
-sed -i 's/passwd:     compat/passwd:     compat ldap/g' /etc/nsswitch.conf && \
-sed -i 's/group:      compat/group:      compat ldap/g' /etc/nsswitch.conf && \
+    # 3. Tell the OS to look into LDAP for users and groups
+    sed -i 's/passwd:     compat/passwd:     compat ldap/g' /etc/nsswitch.conf && \
+    sed -i 's/group:      compat/group:      compat ldap/g' /etc/nsswitch.conf && \
 
-# 4. Start the synchronization service
-nslcd &
-```
+    # 4. Start the synchronization service
+    nslcd &
+    ```
 
-C. Verify System-Level Identity
-To prove that SLES now recognizes the LDAP user pippo (even though he doesn't exist in /etc/passwd), run:
-Bash
-```
-id pippo
-```
-    ✅ Success Result: > uid=1000(pippo) gid=10000(paperopoli) groups=10000(paperopoli)
+    C. Verify System-Level Identity
+    To prove that SLES now recognizes the LDAP user pippo (even though he doesn't exist in /etc/passwd), run:
+    Bash
+    ```
+    id pippo
+    ```
+        ✅ Success Result: > uid=1000(pippo) gid=10000(paperopoli) groups=10000(paperopoli)
 
-💡 Why this is important (The "Enterprise" Value)
+    💡 Why this is important (The "Enterprise" Value)
 
-By integrating SLES with LDAP, you have created a Centralized Identity Management system:
+    By integrating SLES with LDAP, you have created a Centralized Identity Management system:
 
-    -> Single Point of Truth: User pippo is created only once in OpenLDAP.
-
-    -> Web Security: Keycloak authenticates pippo for web apps and APIs using Modern OIDC Tokens.
-
-    -> Infrastructure Security: SLES authenticates pippo for server access (SSH, Console) using the same LDAP credentials.
+        -> Single Point of Truth: User pippo is created only once in OpenLDAP.
+        -> Web Security: Keycloak authenticates pippo for web apps and APIs using Modern OIDC Tokens.
+        -> Infrastructure Security: SLES authenticates pippo for server access (SSH, Console) using the same LDAP credentials.
 
 If you change Pippo's password in LDAP, it updates instantly across the entire stack—from the Python API to the Linux Terminal.
