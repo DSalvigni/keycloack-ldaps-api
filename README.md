@@ -62,8 +62,7 @@ Keycloak often requires new users to update their profile. We need to disable th
 3. Generate the Access Token (The curl command)
 Now, ask Keycloak for a "Passport" (JWT Token) by exchanging Pippo's credentials.
 Note: Replace YOUR_CLIENT_SECRET with the secret found in Clients -> mia-api -> Credentials tab.
-Bash
-
+    ```bash
     curl -X POST 'http://localhost:8080/realms/Laboratorio/protocol/openid-connect/token' \
     -H 'Content-Type: application/x-www-form-urlencoded' \
     -d 'grant_type=password' \
@@ -71,12 +70,13 @@ Bash
     -d 'client_secret=YOUR_CLIENT_SECRET' \
     -d 'username=pippo' \
     -d 'password=pippo'
+    ```
 
 4. Access the Protected API
 If the command above returns a long string called access_token, copy it and use it to "knock" on the API's door:
-```Bash
-
+    
     # Replace <TOKEN> with the long string received in step 3
+    ```bash
     curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000
     ```
         Expected Result:
