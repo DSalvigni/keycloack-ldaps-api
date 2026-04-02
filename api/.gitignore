@@ -1,0 +1,11 @@
+# Escludi i dati del database e le config di LDAP
+ldap_config/
+ldap_data/
+keycloak_data/
+
+# Escludi la cache di Python
+__pycache__/
+*.pyc
+
+# Escludi file di log o temporanei
+*.log

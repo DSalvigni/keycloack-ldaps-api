@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  openldap:
+    image: osixia/openldap:latest
+    container_name: openldap
+    environment:
+      LDAP_ORGANISATION: "Esempio"
+      LDAP_DOMAIN: "esempio.it"
+      LDAP_ADMIN_PASSWORD: "admin"
+    volumes:
+      - ./ldap_data:/var/lib/ldap
+      - ./ldap_config:/etc/ldap/slapd.d
+    ports:
+      - "389:389"
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8081:80"
+    depends_on:
+      - openldap
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak_db_data:/opt/keycloak/data  # <--- Cambiato qui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - openldap
+  sles:
+    image: registry.suse.com/suse/sle15:latest
+    container_name: sles_test
+    tty: true
+    stdin_open: true
+    command: /bin/bash
+  api-test:
+    image: python:3.9-slim
+    container_name: api_test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    command: python3 main.py
+    depends_on:
+      - keycloak
+# Aggiungi queste righe in fondo al file, fuori da "services"
+volumes:
+  keycloak_db_data:
