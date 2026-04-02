@@ -35,7 +35,7 @@ docker-compose up -d
 ```
 
 
-##  Explanation fo the Use Case: 
+##  Explanation of the Use Case: 
 Explain this to your colleague as a "3-Step Handshake" between LDAP, Keycloak, and the API. Since docker-compose up -d is already running, here is the exact sequence to get that Token and use it.
 
 🚀 How to Authenticate "Pippo" (Step-by-Step)
